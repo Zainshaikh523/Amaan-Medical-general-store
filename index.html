@@ -601,19 +601,37 @@
   }
 
   function submitOrder() {
-    const name  = document.getElementById('custName').value.trim();
-    const phone = document.getElementById('custPhone').value.trim();
-    const addr  = document.getElementById('custAddr').value.trim();
-    const meds  = [...document.querySelectorAll('#medList .med-item input[type="text"]')]
-                    .map(i => i.value.trim()).filter(Boolean);
+  const name  = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const addr  = document.getElementById('custAddr').value.trim();
+  const note  = document.getElementById('custNote') ? document.getElementById('custNote').value.trim() : '';
+  const delivery = document.querySelector('select') ? document.querySelector('select').options[document.querySelector('select').selectedIndex].text : '';
+  const meds  = [...document.querySelectorAll('#medList .med-item input[type="text"]')]
+                  .map(i => {
+                    const qty = i.parentElement.querySelector('input[type="number"]');
+                    return i.value.trim() + (qty && qty.value ? ' x' + qty.value : '');
+                  }).filter(Boolean);
 
-    if (!name)  { alert('Please enter your name.'); document.getElementById('custName').focus(); return; }
-    if (!phone) { alert('Please enter your phone number.'); document.getElementById('custPhone').focus(); return; }
-    if (!addr)  { alert('Please enter your delivery address.'); document.getElementById('custAddr').focus(); return; }
-    if (!meds.length) { alert('Please add at least one medicine.'); return; }
+  if (!name)  { alert('Please enter your name.');            document.getElementById('custName').focus();  return; }
+  if (!phone) { alert('Please enter your phone number.');    document.getElementById('custPhone').focus(); return; }
+  if (!addr)  { alert('Please enter your delivery address.'); document.getElementById('custAddr').focus(); return; }
+  if (!meds.length) { alert('Please add at least one medicine.'); return; }
 
-    document.getElementById('orderId').textContent = generateOrderId();
-    document.getElementById('modal').classList.add('active');
+  let msg = '🏥 *NEW ORDER - Amaan Medical*\n';
+  msg += '━━━━━━━━━━━━━━━━━━━━\n';
+  msg += '👤 *Name:* ' + name + '\n';
+  msg += '📞 *Phone:* ' + phone + '\n';
+  msg += '📍 *Address:* ' + addr + '\n';
+  msg += '🕐 *Delivery:* ' + delivery + '\n';
+  msg += '\n💊 *Medicines:*\n';
+  meds.forEach((m, i) => { msg += (i+1) + '. ' + m + '\n'; });
+  if (note) msg += '\n📝 *Notes:* ' + note;
+  msg += '\n━━━━━━━━━━━━━━━━━━━━';
+
+  window.open('https://wa.me/919595676755?text=' + encodeURIComponent(msg), '_blank');
+
+  document.getElementById('orderId').textContent = generateOrderId();
+  document.getElementById('modal').classList.add('active');
   }
 
   function closeModal() {
